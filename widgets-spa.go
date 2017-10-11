@@ -1,17 +1,22 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"widgets-spa/sqlconn"
+)
 
 func main() {
-	http.HandleFunc("/", homeHandler)	
+	http.HandleFunc("/", homeHandler)
 	serveFolder("/components/")
 	serveFolder("/img/")
 	serveFolder("/scripts/")
 
+	sqlconn.Connect()
+
 	panic(http.ListenAndServe(":17901", nil))
 }
 
-func serveFolder(folderName string){
+func serveFolder(folderName string) {
 	http.HandleFunc(folderName, serveFile)
 }
 
