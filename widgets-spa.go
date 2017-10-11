@@ -3,12 +3,16 @@ package main
 import "net/http"
 
 func main() {
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/components/", serveFile)
-	http.HandleFunc("/img/", serveFile)
-	http.HandleFunc("/scripts/", serveFile)
+	http.HandleFunc("/", homeHandler)	
+	serveFolder("/components/")
+	serveFolder("/img/")
+	serveFolder("/scripts/")
 
 	panic(http.ListenAndServe(":17901", nil))
+}
+
+func serveFolder(folderName string){
+	http.HandleFunc(folderName, serveFile)
 }
 
 func serveFile(w http.ResponseWriter, r *http.Request) {

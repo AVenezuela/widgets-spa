@@ -340,6 +340,14 @@ ul.sidebar .sidebar-list .menu-icon {
   line-height: 40px;
   width: 70px;
 }
+
+.active a {
+  background: #2d3e63;
+  border-left: 3px solid #e99d1a;
+  color: #fff !important;  
+  text-indent: 22px !important;  
+}
+
 #page-wrapper:not(.open) ul.sidebar {
   bottom: 0;
 }
