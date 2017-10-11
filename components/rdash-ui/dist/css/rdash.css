@@ -348,6 +348,10 @@ ul.sidebar .sidebar-list .menu-icon {
   text-indent: 22px !important;  
 }
 
+.active a  .menu-icon {
+  text-indent: 25px !important;
+}
+
 #page-wrapper:not(.open) ul.sidebar {
   bottom: 0;
 }
