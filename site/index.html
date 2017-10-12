@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Widget Factory!</title>
+    <link rel="stylesheet" type="text/css" href="components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="components/rdash-ui/dist/css/rdash.min.css">
+    <script src="components/vue/vue.js"></script>
+    <script src="components/vue/vue-router.js"></script>
+</head>
+<!--go get github.com/denisenkom/go-mssqldb-->
+<body>
+    <div id="page-wrapper" class="open">
+        <!-- Sidebar -->
+        <navmenu></navmenu>
+
+        <!-- End Sidebar -->
+        <div id="content-wrapper">
+
+            <div class="page-content">
+
+                <!-- Header Bar -->
+                <div class="row header col-xs-12">
+                    <div class="user pull-right">
+                        <div class="item dropdown">
+                            <a href="#" class="dropdown-toggle"><img src="img/avatar.jpg" alt=""></a>
+                        </div>
+                    </div>
+                    <div class="meta">
+                        <div class="page">Dashboard</div>
+                        <div class="breadcrumb-links">Home / Dashboard</div>
+                    </div>
+                </div>
+                <!-- End Header Bar -->
+                <transition>
+                        <router-view></router-view>
+                </transition>
+            </div>
+            <!-- End Page Content -->
+        </div>
+        <!-- End Content Wrapper -->
+    </div>    
+</body>
+<script type="text/x-template" id="home-view">
+    <div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-xs-12">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-icon green pull-left">
+                            <i class="fa fa-users"></i>
+                        </div>
+                        <div class="title">{5}</div>
+                        <div class="comment">Users</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xs-12">
+                <div class="widget">
+                    <div class="widget-header">
+                        <div class="widget-icon green pull-left">
+                            <i class="fa fa-users"></i>
+                        </div>
+                        <div class="title">{10}</div>
+                        <div class="comment">Widgets</div>
+                    </div>
+                </div>
+            </div>
+        </div>      
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="widget">
+                    <div class="widget-header">Users
+                        <div class="pull-right"><input type="text" class="form-control input-sm"></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">ID</th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">1</td>
+                                    <td>Joe Bloggs</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">2</td>
+                                    <td>Timothy Hernandez</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">3</td>
+                                    <td>Joe Bickham</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="widget">
+                    <div class="widget-header">Widgets
+                        <div class="pull-right"><input type="text" class="form-control input-sm"></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">ID</th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">1</td>
+                                    <td>A</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">2</td>
+                                    <td>B</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/x-template" id="nav-menu">
+    <div id="sidebar-wrapper">
+        <ul class="sidebar">
+            <li class="sidebar-main">
+                <a href="/">
+                    Dashboard <span class="menu-icon fa fa-tachometer"></span>
+                </a>
+            </li>
+            <li class="sidebar-title"><span>NAVIGATION</span></li>
+            <router-link exact-active-class="active" class="sidebar-list" tag="li" to="/">
+                <a>Dashboard <span class="menu-icon fa fa-tachometer"></span></a>
+            </router-link>            
+            <router-link exact-active-class="active" class="sidebar-list" tag="li" to="/users">
+                    <a> Users <span class="menu-icon fa fa-users"></span></a>
+            </router-link>
+            <router-link exact-active-class="active" class="sidebar-list" tag="li" to="/widgets">
+                <a>Widgets <span class="menu-icon fa fa-cubes"></span></a>
+            </router-link>            
+        </ul>
+        <div class="sidebar-footer col-xs-12"><a href="#" target="_blank">&copy; 2015 Red Ventures</a></div>
+    </div>
+</script>
+<script type="text/x-template" id="users-view">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="widget">
+            <div class="widget-header">Users
+                <div class="pull-right"><input type="text" class="form-control input-sm"></div>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th class="text-center">ID</th>
+                    <th>Name</th>
+                    <th>Avatar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <td class="text-center">1</td>
+                    <td>JBoss McHuston</td>
+                    <td><img src="https://s.gravatar.com/avatar/e11550b1bf793d43639292b196374262?s=48"></td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/x-template" id="widgets-view">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="widget">
+                <div class="widget-header">Widgets
+                    <div class="pull-right">
+                    <button class="btn btn-sm btn-info">+ Create</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                    <thead>
+                        <tr>
+                        <th class="text-center">ID</th>
+                        <th>Name</th>
+                        <th>Color</th>
+                        <th>Price</th>
+                        <th>Melts?</th>
+                        <th>Inventory</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td class="text-center">1</td>
+                        <td>Foo</td>
+                        <td>red</td>
+                        <td>$4.99</td>
+                        <td>yes</td>
+                        <td>27</td>
+                        </tr>
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="scripts/components/navmenu.js"></script>
+<script src="scripts/components/users.js"></script>
+<script src="scripts/components/widgets.js"></script>
+<script src="scripts/components/home.js"></script>
+<script src="scripts/app.js"></script>
+
+</html>
