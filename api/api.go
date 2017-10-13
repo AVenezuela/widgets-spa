@@ -1,12 +1,21 @@
 package main
 
-import (	
+import (
 	"net/http"
-	"github.com/AVenezuela/widgets-spa/api/routes"
+	"widgets-spa/api/route"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
-	http.HandleFunc("/users", users.GetUsers)
+	r := httprouter.New()
 
-	panic(http.ListenAndServe(":666", nil))
+	r.GET("/users", route.GetUsers)
+	r.GET("/users/:id", route.GetUser)
+	r.GET("/widgets/", route.GetWidgets)
+	r.GET("/widgets/:id", route.GetWidget)
+	r.POST("/widgets/", route.InsertWidget)
+	r.PUT("/widgets/", route.UpdateWidget)
+
+	panic(http.ListenAndServe(":666", r))
 }
