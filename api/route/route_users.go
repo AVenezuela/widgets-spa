@@ -3,34 +3,37 @@ package route
 import (
 	"encoding/json"
 	"net/http"
-	"widgets-spa/api/sqlconn"
+	"strconv"
+	"github.com/AVenezuela/widgets-spa/api/sqlconn"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-//GetUsers gets all users
-func GetUsers(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	db, err := sqlconn.NewWidgetDB(nil)
-	defer db.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	rows, err := db.All("SELECT [id],[name],[gravatar] FROM [dbo].[User] ORDER BY [Name] ASC")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	js, err := json.Marshal(rows)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	db.Close()
+func GetErrors(w http.ResponseWriter, r *http.Request, p httprouter.Params){	
+	var err error
+	erroId := p.ByName("id")
 	w.Header().Set("Content-Type", "application/json")
+	if i, err := strconv.ParseInt(erroId, 10, 32); err == nil{
+		w.WriteHeader(int(i))
+		return
+	}
+	http.Error(w, err.Error(), http.StatusInternalServerError)
+}
+
+//GetUsers gets all users
+func GetUsers(w http.ResponseWriter, r *http.Request, p httprouter.Params) {	
+	w.Header().Set("Content-Type", "application/json")	
+	if db, err := sqlconn.NewWidgetDB(nil); err == nil{
+		defer db.Close()
+		if rows, err := db.All("SELECT [id],[name],[gravatar] FROM [dbo].[User] ORDER BY [Name] ASC"); err == nil{
+			if js, err := json.Marshal(rows); err == nil{					
+				w.Write(js)
+				return
+			}				
+		}				
+	}
+	w.WriteHeader(http.StatusBadRequest)	
+	js := GetJSONError("Failed to get users")
 	w.Write(js)
 }
 

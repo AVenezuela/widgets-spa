@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"widgets-spa/api/route"
+	"github.com/AVenezuela/widgets-spa/api/route"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -16,6 +16,8 @@ func main() {
 	r.GET("/widgets/:id", route.GetWidget)
 	r.POST("/widgets/", route.InsertWidget)
 	r.PUT("/widgets/", route.UpdateWidget)
+
+	r.GET("/errors/:id", route.GetErrors)
 
 	panic(http.ListenAndServe(":666", r))
 }

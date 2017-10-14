@@ -1,6 +1,7 @@
 package sqlconn
 
 import (
+	"os"
 	"database/sql"
 	"fmt"
 	"strings"
@@ -26,7 +27,8 @@ type DbLayer struct {
 }
 
 func NewWidgetDB(fn func(*sql.DB)) (*DbLayer, error) {
-	return NewDbLayer("mssql", "server=NBBV022082\\SQLEXPRESS;user id=userwidget;password=widget@123;encrypt=disable", fn)
+	var connectionString string = os.Getenv("CS_WIDGETDB")
+	return NewDbLayer("mssql", connectionString, fn)
 }
 
 func NewDbLayer(driver, dsn string, fn func(*sql.DB)) (*DbLayer, error) {

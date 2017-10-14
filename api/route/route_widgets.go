@@ -5,7 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"widgets-spa/api/sqlconn"
+	"github.com/AVenezuela/widgets-spa/api/sqlconn"
 
 	"github.com/fatih/structs"
 	"github.com/julienschmidt/httprouter"
@@ -121,47 +121,36 @@ func InsertWidget(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 func UpdateWidget(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
-
 	var widget Widget
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	if err != nil {
-		panic(err)
-	}
-	if err := r.Body.Close(); err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(body, &widget); err != nil {
-		w.WriteHeader(422)
-		if err := json.NewEncoder(w).Encode(err); err != nil {
+	var err error
+	if body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576)); err == nil {
+		if err := r.Body.Close(); err != nil {
 			panic(err)
 		}
+		if err := json.Unmarshal(body, &widget); err != nil {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			if err := json.NewEncoder(w).Encode(err); err != nil {
+				panic(err)
+			}
+		}
+		if db, err := sqlconn.NewWidgetDB(nil); err == nil{
+			defer db.Close()
+			mapWidget := structs.Map(widget)
+			delete(mapWidget, "Id")	
+			if recordsAffected, err := db.Update("Widget", mapWidget, "Id = ?", widget.Id); err == nil{
+				if recordsAffected == 0 {
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}else{
+					w.WriteHeader(http.StatusCreated)
+					if js, err := json.Marshal(widget); err == nil {
+						w.Write(js)
+					}				
+				}
+			}
+			db.Close()
+		}
 	}
-
-	db, err := sqlconn.NewWidgetDB(nil)
-	defer db.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	mapWidget := structs.Map(widget)
-	delete(mapWidget, "Id")
-
-	recordsAffected, err := db.Update("Widget", mapWidget, "Id = ?", widget.Id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	if recordsAffected == 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	db.Close()
-	w.WriteHeader(http.StatusCreated)
-	js, err := json.Marshal(widget)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Write(js)
+	http.Error(w, err.Error(), http.StatusInternalServerError)
+	return
 }

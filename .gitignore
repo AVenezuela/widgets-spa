@@ -3,6 +3,7 @@
 
 # User-specific files
 *exe
+debug
 
 # Visual Studio 2015 cache/options directory
 .vscode/
