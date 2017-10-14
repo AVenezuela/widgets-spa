@@ -39,28 +39,18 @@ func GetUsers(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 //GetUser gets the user by Id
 func GetUser(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName("id")
-
-	db, err := sqlconn.NewWidgetDB(nil)
-	defer db.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	row, err := db.One("SELECT [id],[name],[gravatar] FROM [dbo].[User] WHERE Id = ?", id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	js, err := json.Marshal(row)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	db.Close()
 	w.Header().Set("Content-Type", "application/json")
+	id := p.ByName("id")
+	if db, err := sqlconn.NewWidgetDB(nil); err == nil{
+		defer db.Close()
+		if row, err := db.One("SELECT [id],[name],[gravatar] FROM [dbo].[User] WHERE Id = ?", id); err == nil{
+			if js, err := json.Marshal(row); err == nil {
+				w.Write(js)					
+				return
+			}						
+		}
+	}
+	w.WriteHeader(http.StatusNotFound)
+	js := GetJSONError("Failed to get user")
 	w.Write(js)
 }

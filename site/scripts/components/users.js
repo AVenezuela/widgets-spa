@@ -1,3 +1,8 @@
 const UsersView = Vue.component('users-view', {
-    template: '#users-view'
+    template: '#users-view',
+    computed: {        
+        users() {
+            return store.state.moduleUser.list
+        }
+    }
 })

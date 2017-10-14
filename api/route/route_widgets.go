@@ -20,109 +20,77 @@ type Widget struct {
 	Melts     bool   `json:"melts" structs:",omitempty"`
 }
 
-//GetUsers gets all users
+//GetWidgets gets all wdigets
 func GetWidgets(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	db, err := sqlconn.NewWidgetDB(nil)
-	defer db.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	rows, err := db.All("SELECT [id],[name],[color],[price],[inventory],[melts] FROM [dbo].[Widget] ORDER BY [Name] ASC")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	js, err := json.Marshal(rows)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	db.Close()
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
-}
-
-//GetUser gets the user by Id
-func GetWidget(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName("id")
-
-	db, err := sqlconn.NewWidgetDB(nil)
-	defer db.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	row, err := db.One("SELECT [id],[name],[color],[price],[inventory],[melts] FROM [dbo].[Widget] WHERE Id = ?", id)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	js, err := json.Marshal(row)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	db.Close()
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
-}
-
-func InsertWidget(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var widget Widget
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	if err != nil {
-		panic(err)
-	}
-	if err := r.Body.Close(); err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(body, &widget); err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(422)
-		if err := json.NewEncoder(w).Encode(err); err != nil {
-			panic(err)
+	if db, err := sqlconn.NewWidgetDB(nil); err == nil{
+		defer db.Close()
+		if rows, err := db.All("SELECT [id],[name],[color],[price],[inventory],[melts] FROM [dbo].[Widget] ORDER BY [Name] ASC"); err == nil {
+			if js, err := json.Marshal(rows); err == nil{
+				w.Write(js)
+				return
+			}
 		}
 	}
+	w.WriteHeader(http.StatusBadRequest)	
+	js := GetJSONError("Failed to get widgets")
+	w.Write(js)
+}
 
-	db, err := sqlconn.NewWidgetDB(nil)
-	defer db.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	mapWidget := structs.Map(widget)
-	delete(mapWidget, "Id")
-	id, err := db.Insert("Widget", mapWidget)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	widget.Id = id
-
-	db.Close()
+//GetWidget gets the widget by Id
+func GetWidget(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	js, err := json.Marshal(widget)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	id := p.ByName("id")
+	if db, err := sqlconn.NewWidgetDB(nil); err == nil{
+		defer db.Close()
+		if row, err := db.One("SELECT [id],[name],[color],[price],[inventory],[melts] FROM [dbo].[Widget] WHERE Id = ?", id); err == nil {
+			if js, err := json.Marshal(row); err == nil{
+				w.Write(js)
+				return
+			}
+		}
 	}
+	w.WriteHeader(http.StatusNotFound)
+	js := GetJSONError("Failed to get widget")
+	w.Write(js)
+}
+
+//InsertWidget inserts new widget
+func InsertWidget(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	w.Header().Set("Content-Type", "application/json")	
+	if body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576)); err == nil {
+		var widget Widget
+		if err := r.Body.Close(); err != nil {
+			panic(err)
+		}	
+		if err := json.Unmarshal(body, &widget); err != nil {			
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			if err := json.NewEncoder(w).Encode(err); err != nil {
+				panic(err)
+			}
+		}
+		if db, err := sqlconn.NewWidgetDB(nil); err == nil{
+			defer db.Close()
+			mapWidget := structs.Map(widget)
+			delete(mapWidget, "Id")
+			if id, err := db.Insert("Widget", mapWidget); err == nil{				
+				if js, err := json.Marshal(widget); err == nil{
+					widget.Id = id
+					w.WriteHeader(http.StatusCreated)
+					w.Write(js)
+					return
+				}
+			}
+		}
+	}
+	w.WriteHeader(http.StatusUnprocessableEntity)
+	js := GetJSONError("Failed to insert new widget")
 	w.Write(js)
 }
 
 func UpdateWidget(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	w.Header().Set("Content-Type", "application/json")
 	var widget Widget
-	var err error
 	if body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576)); err == nil {
 		if err := r.Body.Close(); err != nil {
 			panic(err)
@@ -138,19 +106,17 @@ func UpdateWidget(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 			mapWidget := structs.Map(widget)
 			delete(mapWidget, "Id")	
 			if recordsAffected, err := db.Update("Widget", mapWidget, "Id = ?", widget.Id); err == nil{
-				if recordsAffected == 0 {
-					w.WriteHeader(http.StatusBadRequest)
-					return
-				}else{
-					w.WriteHeader(http.StatusCreated)
+				if recordsAffected != 0 {					
+					w.WriteHeader(http.StatusOK)
 					if js, err := json.Marshal(widget); err == nil {
 						w.Write(js)
+						return
 					}				
 				}
 			}
-			db.Close()
 		}
-	}
-	http.Error(w, err.Error(), http.StatusInternalServerError)
-	return
+	}	
+	w.WriteHeader(http.StatusNotFound)
+	js := GetJSONError("Failed to update widget")
+	w.Write(js)
 }
