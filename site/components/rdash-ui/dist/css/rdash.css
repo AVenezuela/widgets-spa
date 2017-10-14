@@ -518,9 +518,9 @@ ul.sidebar .sidebar-list .menu-icon {
 }
 
 .modal-container {
-  width: 300px;
+  width: 80%;
   margin: 0px auto;
-  padding: 20px 30px;
+  padding: 5px 30px;
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
@@ -534,7 +534,7 @@ ul.sidebar .sidebar-list .menu-icon {
 }
 
 .modal-body {
-  margin: 20px 0;
+  margin: 5px 0;
 }
 
 .modal-default-button {

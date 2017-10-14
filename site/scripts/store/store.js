@@ -40,7 +40,13 @@ const UserModule = {
 const WidgetModule ={
     state:{
         list:[],
-        model:{}
+        model:{
+            name:'',
+            color:'',
+            price:'',
+            inventory:0,
+            melts:false
+        }
     },
     mutations:{
         setWidgets (state, widgets){
@@ -57,6 +63,13 @@ const WidgetModule ={
                     alert('Ops! Something is wrong loading widgets\n'+ JSON.stringify(e))
                 })
             }
+        },
+        saveWidget(context){
+            HTTP.post('widgets/', context.state.model).then(function(response){
+                alert('Done!')
+            }).catch(function(e){
+                console.log('Ops! Something is wrong saving widget\n'+ JSON.stringify(e))
+            })            
         }
     },
     getters:{

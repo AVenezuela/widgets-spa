@@ -4,5 +4,8 @@ const UsersView = Vue.component('users-view', {
         users() {
             return store.state.moduleUser.list
         }
+    },
+    mounted:function(){
+        store.dispatch('setUsers')
     }
 })
