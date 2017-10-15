@@ -1,9 +1,13 @@
 const HTTP = axios.create({
     baseURL: `http://localhost:666/`
-    /*,headers: {
-      Authorization: 'Bearer {token}'
-    }*/
+    ,headers: {
+        "Content-Type":"application/json;charset=UTF-8"
+    }
 })
+
+const SAVE_SUCCESS = 'SAVE_SUCCESS'
+const SAVE_FAILURE = 'SAVE_FAILURE'
+const SAVE_RESET = 'SAVE_RESET'
 
 const UserModule = {
     state:{
@@ -40,17 +44,20 @@ const UserModule = {
 const WidgetModule ={
     state:{
         list:[],
-        model:{
-            name:'',
-            color:'',
-            price:'',
-            inventory:0,
-            melts:false
-        }
+        saveStatus:null
     },
     mutations:{
         setWidgets (state, widgets){
             state.list = widgets
+        },
+        [SAVE_SUCCESS](state){
+            state.saveStatus = 'sucess'
+        },
+        [SAVE_FAILURE](state){
+            state.saveStatus = 'failed'
+        },
+        [SAVE_RESET](state){
+            state.saveStatus = null
         }
     },
     actions:{
@@ -59,17 +66,22 @@ const WidgetModule ={
                 HTTP.get('widgets').then(function(response){
                     context.commit('setWidgets', response.data)                    
                 }
-                ).catch(function(e){
-                    alert('Ops! Something is wrong loading widgets\n'+ JSON.stringify(e))
+                ).catch(function(e){                    
+                    //alert('Ops! Something is wrong loading widgets\n'+ JSON.stringify(e))
                 })
             }
         },
-        saveWidget(context){
-            HTTP.post('widgets/', context.state.model).then(function(response){
-                alert('Done!')
-            }).catch(function(e){
-                console.log('Ops! Something is wrong saving widget\n'+ JSON.stringify(e))
-            })            
+        saveWidget(context, widget){
+            return new Promise((resolve, reject) =>{
+                console.log(JSON.stringify(widget))
+                HTTP.post('widget', JSON.stringify(widget)).then(function(response){
+                    context.commit(SAVE_SUCCESS)
+                    resolve(response);
+                }).catch(function(error){
+                    context.commit(SAVE_FAILURE)
+                    reject(error);
+                })  
+            })                      
         }
     },
     getters:{
@@ -78,7 +90,7 @@ const WidgetModule ={
         },
         isWidgetsLoaded(state){
             return (state.list.length > 0)
-        }
+        }        
     }
 }
 

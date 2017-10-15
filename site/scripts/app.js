@@ -10,6 +10,11 @@ const router = new VueRouter({
 
 Vue.config.productionTip = false
 
+Vue.component('modal', {
+    template: '#modal-template',
+    props:['model']
+}) 
+
 /* eslint-disable no-new */
 new Vue({
     router,

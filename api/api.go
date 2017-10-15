@@ -1,26 +1,27 @@
 package main
 
-import (
-	"net/http"
+import (	
 	"github.com/AVenezuela/widgets-spa/api/route"
 
-	"github.com/julienschmidt/httprouter"
-	"github.com/rs/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
-	r := httprouter.New()
+	router := gin.Default()
+	router.Use(cors.Default())
+	
+	router.POST("/widget", route.InsertWidget)
+	router.PUT("/widget", route.UpdateWidget)
+	router.GET("/users", route.GetUsers)
+	router.GET("/users/:id", route.GetUser)
+	router.GET("/widgets", route.GetWidgets)
+	router.GET("/widgets/:id", route.GetWidget)	
+	
+	
+	router.Run(":666")
 
-	r.GET("/users", route.GetUsers)
-	r.GET("/users/:id", route.GetUser)
-	r.GET("/widgets", route.GetWidgets)
-	r.GET("/widgets/:id", route.GetWidget)
-	r.POST("/widgets/", route.InsertWidget)
-	r.PUT("/widgets/", route.UpdateWidget)
-
-	r.GET("/errors/:id", route.GetErrors)
-
-	handler := cors.Default().Handler(r)
-
-	panic(http.ListenAndServe(":666", handler))
+	//handler := cors.Default().Handler(router)
+	//r.GET("/errors/:id", route.GetErrors)
+	//panic(http.ListenAndServe(":666", handler))
 }

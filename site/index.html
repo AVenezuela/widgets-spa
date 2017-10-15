@@ -137,7 +137,7 @@
             <div class="widget">
                 <div class="widget-header">Widgets
                     <div class="pull-right">
-                    <button class="btn btn-sm btn-info" @click="showCreateModal = true">+ Create</button>
+                    <button class="btn btn-sm btn-info" @click="showCreateModal = true"><i class="fa fa-plus"></i> Create</button>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -166,9 +166,26 @@
                 </div>
             </div>
         </div>        
-        <create-widget v-if="showCreateModal" :model="widget" @save="saveWidget" @close="showCreateModal = false">            
-            <h3 slot="header">Create Widget</h3>
-        </create-widget>     
+        <modal v-if="showCreateModal" :model="widget" @save="saveWidget" @close="closeModal">
+            <div slot="body" class="row">
+                <div class="col-lg-12">
+                    <input type="text" class="form-control" v-model="widget.name" placeholder="Name">
+                </div>
+                <div class="col-lg-6">
+                    <input type="text" class="form-control" v-model="widget.price" placeholder="Price">
+                </div>
+                <div class="col-lg-6">
+                    <input type="text" class="form-control" v-model.number="widget.inventory" placeholder="Inventory">
+                </div>
+                <div class="col-lg-6">                    
+                    <input type="text" class="form-control" v-model="widget.color" placeholder="Color">
+                </div>
+                <div class="col-lg-6">
+                    <label><input class="form-check-input" type="checkbox" v-model="widget.melts"> Melts</label>
+                </div>                                
+            </div>
+            <h3 slot="header">Create Widget {{ saveStatus }}</h3>
+        </modal>     
     </div>
 </script>
 <script type="text/x-template" id="user-widget">
@@ -217,41 +234,21 @@
         </div>
     </div>
 </script>
-<script type="text/x-template" id="modal-createwidget">
+<script type="text/x-template" id="modal-template">
     <transition name="modal">
         <div class="modal-mask">
             <div class="modal-wrapper">
                 <div class="modal-container">
                     <div class="modal-header">
-                        <slot name="header">
-                        Create Widget
-                        </slot>
+                        <slot name="header"></slot>
                     </div>
                     <div class="modal-body">
-                        <slot name="body">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <input type="text" class="form-control" v-model="model.name" placeholder="Name">
-                                </div>
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" v-model="model.price" placeholder="Price">
-                                </div>
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" v-model.number="model.inventory" placeholder="Inventory">
-                                </div>
-                                <div class="col-lg-6">
-                                    <input type="text" class="form-control" v-model="model.color" placeholder="Color">
-                                </div>
-                                <div class="col-lg-6">
-                                    <label><input class="form-check-input" type="checkbox" v-model="model.melts"> Melts</label>
-                                </div>                                
-                            </div>
-                        </slot>
+                        <slot name="body"></slot>
                     </div>
                     <div class="modal-footer">
                         <slot name="footer">
-                            <button class="btn btn-sm btn-default" @click="$emit('close')">Cancel</button>
-                            <button class="btn btn-sm btn-info" @click="$emit('save')">Save</button>
+                            <button class="btn btn-sm btn-default" @click="$emit('close')"><i class="fa fa-ban"/> Cancel</button>
+                            <button class="btn btn-sm btn-info" @click="$emit('save')"><i class="fa fa-floppy-o"/> Save</button>
                         </slot>
                     </div>
                 </div>
