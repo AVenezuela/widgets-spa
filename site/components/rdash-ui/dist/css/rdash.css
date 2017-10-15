@@ -496,10 +496,6 @@ ul.sidebar .sidebar-list .menu-icon {
   font-size: 28px;
   display: block;
 }
-.gravatar-sm{
-  width: 36px !important;
-  height: 36px !important;
-}
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -562,4 +558,46 @@ ul.sidebar .sidebar-list .menu-icon {
 .modal-leave-active .modal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
+}
+
+.row-action:hover{
+  background-color: #fdfdfd;
+}
+
+.column-action{
+  padding-right: 15px;
+}
+
+.column-action i{
+  cursor: pointer;
+  font-size: 18px;
+  visibility: hidden;  
+}
+.column-action i:hover{
+  color: #e99d1a
+}
+.row-action:hover .column-action i{
+  visibility:visible !important
+}
+td .input-group-addon .color-square{
+  width: 15px !important;
+  height: 15px !important;
+}
+.check-ok{
+  color: #00cc99
+}
+.gravatar-md{
+  width: 96px !important;
+  height: 96px !important;
+  max-width: 96px !important;
+  max-height: 96px !important;
+}
+.gravatar-sm{
+  width: 36px !important;
+  height: 36px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
+}
+img[src=""] {
+  display: none;
 }

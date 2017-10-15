@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//Widget interface
 type Widget struct {
 	Id        int64  `json:"id" structs:",omitempty"`
 	Name      string `json:"name" structs:",omitempty"`
@@ -68,39 +69,52 @@ func InsertWidget(c *gin.Context) {
 	}
 }
 
-
+//UpdateWidget update widget record
 func UpdateWidget(c *gin.Context) {
-	c.JSON(http.StatusOK,  gin.H{"status": "ok"})
-	/*
-	w.Header().Set("Content-Type", "application/json")
 	var widget Widget
-	if body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576)); err == nil {
-		if err := r.Body.Close(); err != nil {
-			panic(err)
-		}
-		if err := json.Unmarshal(body, &widget); err != nil {
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			if err := json.NewEncoder(w).Encode(err); err != nil {
-				panic(err)
-			}
-		}
+	if err := c.BindJSON(&widget); err == nil{
 		if db, err := sqlconn.NewWidgetDB(nil); err == nil{
 			defer db.Close()
 			mapWidget := structs.Map(widget)
-			delete(mapWidget, "Id")	
+			delete(mapWidget, "Id")
 			if recordsAffected, err := db.Update("Widget", mapWidget, "Id = ?", widget.Id); err == nil{
-				if recordsAffected != 0 {					
-					w.WriteHeader(http.StatusOK)
-					if js, err := json.Marshal(widget); err == nil {
-						w.Write(js)
-						return
-					}				
+				if recordsAffected != 0 {
+					c.JSON(http.StatusCreated, widget)
+				}else{
+					c.JSON(http.StatusBadRequest, gin.H{
+						"message": "No record affected",
+					})
 				}
+			}else{
+				c.JSON(http.StatusBadRequest, err)
 			}
+		}else{
+			c.JSON(http.StatusBadRequest, err)
 		}
-	}	
-	w.WriteHeader(http.StatusNotFound)
-	js := GetJSONError("Failed to update widget")
-	w.Write(js)
-	*/
+	}else{
+		c.JSON(http.StatusBadRequest, err)
+	}
+}
+
+//DeleteWidget delete widget record
+func DeleteWidget(c *gin.Context) {
+	id := c.Param("id")
+	if db, err := sqlconn.NewWidgetDB(nil); err == nil{
+		defer db.Close()
+		if recordsAffected, err := db.Delete("Widget", "Id = ?", id); err == nil{
+			if recordsAffected != 0 {
+				c.JSON(http.StatusOK, gin.H{
+					"message": "Record deleted",
+				})
+			}else{
+				c.JSON(http.StatusBadRequest, gin.H{
+					"message": "No record affected",
+				})
+			}
+		}else{
+			c.JSON(http.StatusBadRequest, err)
+		}
+	}else{
+		c.JSON(http.StatusBadRequest, err)
+	}
 }

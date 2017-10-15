@@ -9,15 +9,25 @@ import (
 
 func main() {
 	router := gin.Default()
-	router.Use(cors.Default())
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:555"}	
+	config.AllowMethods = []string{"PUT", "DELETE", "POST", "GET"}
+	router.Use(cors.New(config))
 	
-	router.POST("/widget", route.InsertWidget)
-	router.PUT("/widget", route.UpdateWidget)
-	router.GET("/users", route.GetUsers)
-	router.GET("/users/:id", route.GetUser)
+	/*WIDGETS ROUTES */
 	router.GET("/widgets", route.GetWidgets)
-	router.GET("/widgets/:id", route.GetWidget)	
+	router.POST("/widget", route.InsertWidget)
+	router.PUT("/widget", route.UpdateWidget)	
+	router.DELETE("/widget/:id", route.DeleteWidget)	
+	router.GET("/widget/:id", route.GetWidget)	
 	
+	/*USERS ROUTES */
+	router.GET("/users", route.GetUsers)
+	router.POST("/user", route.InsertUser)
+	router.PUT("/user", route.UpdateUser)
+	router.DELETE("/user/:id", route.DeleteUser)
+	router.GET("/user/:id", route.GetUser)
+
 	
 	router.Run(":666")
 
