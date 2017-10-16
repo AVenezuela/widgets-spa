@@ -12,6 +12,7 @@
     <script src="https://unpkg.com/vuex@3.0.0/dist/vuex.js"></script>
 </head>
 <!--go get github.com/denisenkom/go-mssqldb-->
+
 <body>
     <div id="page-wrapper" class="open">
         <!-- Sidebar -->
@@ -36,13 +37,13 @@
                 </div>
                 <!-- End Header Bar -->
                 <transition>
-                        <router-view></router-view>
+                    <router-view></router-view>
                 </transition>
             </div>
             <!-- End Page Content -->
         </div>
         <!-- End Content Wrapper -->
-    </div>    
+    </div>
 </body>
 <script type="text/x-template" id="home-view">
     <div>
@@ -69,7 +70,7 @@
                     </div>
                 </div>
             </div>
-        </div>      
+        </div>
         <div class="row">
             <div class="col-lg-6">
                 <user-widget />
@@ -91,13 +92,13 @@
             <li class="sidebar-title"><span>NAVIGATION</span></li>
             <router-link exact-active-class="active" class="sidebar-list" tag="li" to="/">
                 <a>Dashboard <span class="menu-icon fa fa-tachometer"></span></a>
-            </router-link>            
+            </router-link>
             <router-link exact-active-class="active" class="sidebar-list" tag="li" to="/users">
-                    <a> Users <span class="menu-icon fa fa-users"></span></a>
+                <a> Users <span class="menu-icon fa fa-users"></span></a>
             </router-link>
             <router-link exact-active-class="active" class="sidebar-list" tag="li" to="/widgets">
                 <a>Widgets <span class="menu-icon fa fa-cubes"></span></a>
-            </router-link>            
+            </router-link>
         </ul>
         <div class="sidebar-footer col-xs-12"><a href="#" target="_blank">&copy; 2015 Red Ventures</a></div>
     </div>
@@ -106,42 +107,41 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="widget">
-            <div class="widget-header">Users                
-                <div class="col-lg-6 pull-right">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for..." v-model="searchFor">
-                        <span class="input-group-btn">                            
+                <div class="widget-header">Users
+                    <div class="col-lg-6 pull-right">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search for..." v-model="searchFor">
+                            <span class="input-group-btn">                            
                             <button class="btn btn-info" type="button" @click="showCreateModal = true"><i class="fa fa-plus"></i> Create</button>
                         </span>
+                        </div>
                     </div>
-                </div>                
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">ID</th>
+                                <th>Name</th>
+                                <th>Avatar</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-action" v-for="user in users">
+                                <td class="text-center">{{ user.id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td><img :src="user.gravatar" class="gravatar-sm"></td>
+                                <td class="column-action text-right">
+                                    <i class="fa fa-edit" @click="editUser(user)"></i> &nbsp;&nbsp;
+                                    <i class="fa fa-trash-o" @click="delUser(user)"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="table-responsive">
-                <table class="table">
-                <thead>
-                    <tr>
-                        <th class="text-center">ID</th>
-                        <th>Name</th>
-                        <th>Avatar</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="row-action" v-for="user in users">
-                        <td class="text-center">{{ user.id }}</td>
-                        <td>{{ user.name }}</td>
-                        <td><img :src="user.gravatar" class="gravatar-sm"></td>
-                        <td class="column-action text-right">
-                            <i class="fa fa-edit" @click="editUser(user)"></i>
-                            &nbsp;&nbsp;
-                            <i class="fa fa-trash-o" @click="delUser(user)"></i>
-                        </td>
-                    </tr>
-                </tbody>
-                </table>
-            </div>
-            </div>
-        
+
         </div>
         <modal v-if="showCreateModal" :model="user" @save="actionUser" @close="closeModal">
             <div slot="body" class="row">
@@ -152,11 +152,11 @@
                     <input type="text" class="form-control" v-model="user.gravatar" placeholder="URL Avatar">
                 </div>
                 <div class="col-lg-6 gravatar-md">
-                    <img :src="user.gravatar" class="gravatar-md"/>
+                    <img :src="user.gravatar" class="gravatar-md" />
                 </div>
             </div>
             <h3 slot="header">Create Widget</h3>
-        </modal>     
+        </modal>
     </div>
 </script>
 <script type="text/x-template" id="widgets-view">
@@ -164,53 +164,51 @@
         <div class="col-lg-12">
             <div class="widget">
                 <div class="widget-header">Widgets
-                <div class="col-lg-6 pull-right">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for..." v-model="searchFor">
+                    <div class="col-lg-6 pull-right">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search for..." v-model="searchFor">
                             <span class="input-group-btn">                            
                                 <button class="btn btn-info" type="button" @click="showCreateModal = true"><i class="fa fa-plus"></i> Create</button>
                             </span>
                         </div>
-                    </div>                                            
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
-                    <thead>
-                        <tr>
-                            <th class="text-center">ID</th>
-                            <th>Name</th>
-                            <th>Color</th>
-                            <th class="text-right">Price</th>
-                            <th class="text-center">Melts?</th>
-                            <th class="text-center">Inventory</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="row-action" v-for="widget in widgets">
-                            <td class="text-center">{{ widget.id }}</td>
-                            <td>{{ widget.name }}</td>
-                            <td>
-                                <div class="input-group">
-                                    <div class="input-group-addon color-square" :style="'background-color:' + widget.color"></div>
-                                    &nbsp;
-                                    {{ widget.color }}
-                                </div>
-                            </td>
-                            <td class="text-right">$ {{ widget.price }}</td>
-                            <td class="text-center"><i :class="{ 'fa fa-check check-ok': widget.melts == true }" aria-hidden="true"></i></td>
-                            <td class="text-center">{{ widget.inventory }}</td>
-                            <td class="column-action text-right">
-                                <i class="fa fa-edit" @click="editWidget(widget)"></i>
-                                &nbsp;&nbsp;
-                                <i class="fa fa-trash-o" @click="delWidget(widget)"></i>
-                            </td>
-                        </tr>
-                    </tbody>
+                        <thead>
+                            <tr>
+                                <th class="text-center">ID</th>
+                                <th>Name</th>
+                                <th>Color</th>
+                                <th class="text-right">Price</th>
+                                <th class="text-center">Melts?</th>
+                                <th class="text-center">Inventory</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-action" v-for="widget in widgets">
+                                <td class="text-center">{{ widget.id }}</td>
+                                <td>{{ widget.name }}</td>
+                                <td>
+                                    <div class="input-group">
+                                        <div class="input-group-addon color-square" :style="'background-color:' + widget.color"></div>
+                                        &nbsp; {{ widget.color }}
+                                    </div>
+                                </td>
+                                <td class="text-right">$ {{ widget.price }}</td>
+                                <td class="text-center"><i :class="{ 'fa fa-check check-ok': widget.melts == true }" aria-hidden="true"></i></td>
+                                <td class="text-center">{{ widget.inventory }}</td>
+                                <td class="column-action text-right">
+                                    <i class="fa fa-edit" @click="editWidget(widget)"></i> &nbsp;&nbsp;
+                                    <i class="fa fa-trash-o" @click="delWidget(widget)"></i>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
         <modal v-if="showCreateModal" :model="widget" @save="actionWidget" @close="closeModal">
             <div slot="body" class="row">
                 <div class="col-lg-12">
@@ -230,10 +228,10 @@
                 </div>
                 <div class="col-lg-2">
                     <label><input class="form-check-input" type="checkbox" v-model="widget.melts"> Melts</label>
-                </div>                                
+                </div>
             </div>
             <h3 slot="header">Create Widget</h3>
-        </modal>     
+        </modal>
     </div>
 </script>
 <script type="text/x-template" id="user-widget">
@@ -253,7 +251,7 @@
                     <tr v-for="user in users">
                         <td class="text-center">{{ user.id }}</td>
                         <td>{{ user.name }}</td>
-                    </tr>                                        
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -276,7 +274,7 @@
                     <tr v-for="widget in widgets">
                         <td class="text-center">{{ widget.id }}</td>
                         <td>{{ widget.name }}</td>
-                    </tr>                
+                    </tr>
                 </tbody>
             </table>
         </div>

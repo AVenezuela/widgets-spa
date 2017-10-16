@@ -1,9 +1,9 @@
 package sqlconn
 
 import (
-	"os"
 	"database/sql"
 	"fmt"
+	"os"
 	"strings"
 
 	_ "github.com/denisenkom/go-mssqldb"
