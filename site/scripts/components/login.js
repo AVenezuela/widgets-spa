@@ -11,7 +11,11 @@ const LoginView = Vue.component('login-view', {
             this.showCreateModal = !store.getters.isLogged
         },
         actionLogin (){
-            store.dispatch(DO_LOGIN, this.user)
+            store.dispatch(DO_LOGIN, this.user).then(function(){
+                router.go('/users')
+            }).catch(function(){
+                router.go('/login')
+            })
         },
         closeModal (){
             return false

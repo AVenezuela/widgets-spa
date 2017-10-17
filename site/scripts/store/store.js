@@ -21,6 +21,7 @@ HTTP.interceptors.response.use(response => {
       // and we're not trying to login
       if (!(error.config.method === 'post' && /\/api\/me\/?$/.test(error.config.url))) {
           alert('Needs login')
+          localStorage.removeItem(STR_TOKEN)
         // the token must have expired. Log out.
         //event.emit('logout')
       }
@@ -38,6 +39,7 @@ const DEL_WIDGET = 'DEL_WIDGET'
 const DEL_USER = 'DEL_USER'
 const STR_TOKEN = 'STR_TOKEN'
 const DO_LOGIN = 'DO_LOGIN'
+const DO_LOGOUT = 'DO_LOGOUT'
 const SORT_USERBY = 'SORT_USERBY'
 const SORT_WIDGETBY = 'SORT_WIDGETBY'
 
@@ -53,16 +55,32 @@ const LoginModule ={
     mutations:{
         logAuth (state, user){
             localStorage.setItem(STR_TOKEN, user.token)            
+        },
+        [DO_LOGOUT] (state){
+            localStorage.removeItem(STR_TOKEN)
+            state.user = {
+                username:'',
+                password:'',
+                token:''
+            }
+            state.isLogged = false
         }
     },
     actions:{
         [DO_LOGIN](context, user){
-            axios.post('http://localhost:666/login', user).then(function(response) {
-                user.token = reponse.data.token
-                context.commit('logAuth', user)
-            }).catch(function(e) {
-                alert("Ops! Something is wrong on login for user " + user.username +"\n"+ e.response.data.message)
-            })            
+            return new Promise((resolve, reject) => {                
+                axios.post('http://localhost:666/login', user).then(function(response) {
+                    user.token = response.data.token
+                    context.commit('logAuth', user)
+                    resolve(response);
+                }).catch(function(e) {
+                    alert("Ops! Something is wrong on login for user " + user.username +"\n"+ e.response.data.message)
+                    reject(error);
+                })      
+            })                  
+        },
+        [DO_LOGOUT](context){
+            context.commit(DO_LOGOUT)
         }
     },
     getters:{        
@@ -188,7 +206,7 @@ const WidgetModule = {
                 HTTP.get('widgets').then(function(response) {
                     context.commit('setWidgets', response.data)
                 }).catch(function(e) {
-                    //alert('Ops! Something is wrong loading widgets\n'+ JSON.stringify(e))
+                    alert('Ops! Something is wrong loading widgets\n'+ JSON.stringify(e))
                 })
             }
         },
