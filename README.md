@@ -11,16 +11,16 @@ Create a system variable:
 # Usage
 The main site is at ".\site\" folder. You can start it by runnig:
 ```go
-//go build
-//.\site.exe
-//The URL is localhost\555
+go build
+.\site.exe
+The URL is localhost\555
 ```
 
 The api is at ".\api\" folder. You can start it by runnig:
 ```go
-//go build
-//.\api.exe
-//The URL is localhost\666
+go build
+.\api.exe
+The URL is localhost\666
 ```
 
 # Widgets Single Page App Demo
