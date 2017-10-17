@@ -1,21 +1,27 @@
 # SQL CONNECTION CONFIGURATION
+
 Setting the connection string for a SQL Server DB
-Create a system variable 
-------------------------
+Create a system variable:
+
+```go
 //Name CS_WIDGETDB
 //Value your sql connection string 
-...
+```
 
 # Usage
 The main site is at ".\site\" folder. You can start it by runnig:
+```go
 //go build
 //.\site.exe
 //The URL is localhost\555
+```
 
 The api is at ".\api\" folder. You can start it by runnig:
+```go
 //go build
 //.\api.exe
 //The URL is localhost\666
+```
 
 # Widgets Single Page App Demo
 This is a simple multi-page HTML site. The goal of this project is to take this hardcoded HTML site, and make it hit an API for showing/listing user and widget information. 
