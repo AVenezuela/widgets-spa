@@ -10,7 +10,7 @@ const WidgetsView = Vue.component('widgets-view', {
     },
     computed: {        
         widgets() {
-            var filteredData = store.state.moduleWidget.list
+            var filteredData = store.getters.getSortedWidgets
             var searchKey = this.searchFor && this.searchFor.toLowerCase()
             if(searchKey){
                 filteredData = filteredData.filter(function (row) {

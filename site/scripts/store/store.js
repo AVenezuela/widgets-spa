@@ -1,9 +1,31 @@
 const HTTP = axios.create({
     baseURL: `http://localhost:666/api/`,
     headers: {
-        "Content-Type": "application/json;charset=UTF-8",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MDgxOTAwMTMsImlkIjoiYWRtaW4iLCJvcmlnX2lhdCI6MTUwODE4NjQxM30.EthCZPXmFtJVNQygO-0jWBFEmSGAe25c28sv7RIKXmI"
+        "Content-Type": "application/json;charset=UTF-8"        
     }
+})
+HTTP.interceptors.request.use(config => {
+    config.headers.Authorization = "Bearer " + localStorage.getItem(STR_TOKEN)
+    return config
+})
+HTTP.interceptors.response.use(response => {    
+    // …get the token from the header or response data if exists, and save it.
+    const token = response.headers['Authorization'] || response.data['token']
+    if (token) {
+      //ls.set('jwt-token', token)
+    }
+    return response
+  }, error => {    
+    // Also, if we receive a Bad Request / Unauthorized error
+    if (error.response.status === 400 || error.response.status === 401) {
+      // and we're not trying to login
+      if (!(error.config.method === 'post' && /\/api\/me\/?$/.test(error.config.url))) {
+          alert('Needs login')
+        // the token must have expired. Log out.
+        //event.emit('logout')
+      }
+    }
+    return Promise.reject(error)
 })
 
 const SET_USERS = 'SET_USERS'
@@ -14,11 +36,48 @@ const UPDATE_WIDGET = 'UPDATE_WIDGET'
 const UPDATE_USER = 'UPDATE_USER'
 const DEL_WIDGET = 'DEL_WIDGET'
 const DEL_USER = 'DEL_USER'
+const STR_TOKEN = 'STR_TOKEN'
+const DO_LOGIN = 'DO_LOGIN'
+const SORT_USERBY = 'SORT_USERBY'
+const SORT_WIDGETBY = 'SORT_WIDGETBY'
+
+const LoginModule ={
+    state:{
+        user:{
+            username:'',
+            password:'',
+            token:''
+        },
+        isLogged:Boolean
+    },
+    mutations:{
+        logAuth (state, user){
+            localStorage.setItem(STR_TOKEN, user.token)            
+        }
+    },
+    actions:{
+        [DO_LOGIN](context, user){
+            axios.post('http://localhost:666/login', user).then(function(response) {
+                user.token = reponse.data.token
+                context.commit('logAuth', user)
+            }).catch(function(e) {
+                alert("Ops! Something is wrong on login for user " + user.username +"\n"+ e.response.data.message)
+            })            
+        }
+    },
+    getters:{        
+        isLogged (state){
+            state.isLogged = (localStorage.getItem(STR_TOKEN) != null)
+            return state.isLogged
+        }
+    }
+}
 
 const UserModule = {
     state: {
         list: [],
-        model: {}
+        model: {},
+        sortKey: 'name'
     },
     mutations: {
         setUsers(state, users) {
@@ -33,6 +92,9 @@ const UserModule = {
         },
         delUser(state, user) {
             state.list.splice(state.list.indexOf(user), 1)
+        },
+        [SORT_USERBY](state, sortKey){
+            state.sortKey = sortKey
         }
     },
     actions: {
@@ -74,11 +136,22 @@ const UserModule = {
                     reject(error);
                 })
             })
+        },
+        [SORT_USERBY](context, sortKey){
+            context.dispatch(SORT_USERBY, sortKey)
         }
     },
     getters: {
-        getSortedUsers(state, sort) {
-            return state.list
+        getSortedUsers(state) {
+            var data = []
+            if (state.sortKey) {
+                data = state.list.slice().sort(function (a, b) {
+                  a = a[state.sortKey]
+                  b = b[state.sortKey]
+                  return (a === b ? 0 : a > b ? 1 : -1) * 1
+                })
+              }
+            return data
         },
         isUsersLoaded(state) {
             return (state.list.length > 0)
@@ -88,7 +161,8 @@ const UserModule = {
 
 const WidgetModule = {
     state: {
-        list: []
+        list: [],
+        sortKey: 'name'
     },
     mutations: {
         setWidgets(state, widgets) {
@@ -103,6 +177,9 @@ const WidgetModule = {
         },
         delWidget(state, widget) {
             state.list.splice(state.list.indexOf(widget), 1)
+        },
+        [SORT_WIDGETBY](state, sortKey){
+            state.sortKey = sortKey
         }
     },
     actions: {
@@ -144,11 +221,22 @@ const WidgetModule = {
                     reject(error);
                 })
             })
+        },        
+        [SORT_WIDGETBY](context, sortKey){
+            context.dispatch(SORT_WIDGETBY, sortKey)
         }
     },
     getters: {
-        getSortedWidgets(state, sort) {
-            return state.list
+        getSortedWidgets(state) {
+            var data = []
+            if (state.sortKey) {
+                data = state.list.slice().sort(function (a, b) {
+                  a = a[state.sortKey]
+                  b = b[state.sortKey]
+                  return (a === b ? 0 : a > b ? 1 : -1) * 1
+                })
+              }
+            return data
         },
         isWidgetsLoaded(state) {
             return (state.list.length > 0)
@@ -159,6 +247,7 @@ const WidgetModule = {
 const store = new Vuex.Store({
     modules: {
         moduleUser: UserModule,
-        moduleWidget: WidgetModule
+        moduleWidget: WidgetModule,
+        auth: LoginModule
     }
 })

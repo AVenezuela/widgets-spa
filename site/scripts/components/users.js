@@ -10,7 +10,7 @@ const UsersView = Vue.component('users-view', {
     },
     computed: {        
         users() {
-            var filteredData = store.state.moduleUser.list
+            var filteredData = store.getters.getSortedUsers
             var searchKey = this.searchFor && this.searchFor.toLowerCase()
             if(searchKey){
                 filteredData = filteredData.filter(function (row) {
@@ -26,7 +26,7 @@ const UsersView = Vue.component('users-view', {
 
         }
     },
-    mounted:function(){
+    mounted:function(){        
         store.dispatch(SET_USERS)
         this.user = this.getNewUser()
     },

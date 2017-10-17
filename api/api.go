@@ -1,12 +1,11 @@
 package main
 
 import (
-	"net/http"
+	"net/http"	
 	"time"
 
 	"github.com/AVenezuela/widgets-spa/api/route"
 	"github.com/gin-contrib/cors"
-
 	"github.com/appleboy/gin-jwt"
 	"github.com/gin-gonic/gin"
 )
@@ -46,13 +45,14 @@ func main() {
 		TimeFunc:      time.Now,
 	}
 
-	router.POST("/login", authMiddleware.LoginHandler)
-
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:555"}
-	config.AllowHeaders = []string{"Authorization"}
+	config.AllowHeaders = []string{"Authorization","Origin", "X-Requested-With", "Content-Type", "Accept"}
 	config.AllowMethods = []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"}
 	router.Use(cors.New(config))
+
+
+	router.POST("/login", authMiddleware.LoginHandler)
 
 	auth := router.Group("/api")
 	auth.Use(authMiddleware.MiddlewareFunc())

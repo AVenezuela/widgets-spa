@@ -15,7 +15,6 @@ Vue.component('modal', {
     props: ['model']
 })
 
-/* eslint-disable no-new */
 new Vue({
     router,
     el: '#page-wrapper'
