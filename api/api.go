@@ -1,3 +1,10 @@
+// @APIVersion 1.0.0
+// @APITitle Widget API
+// @APIDescription Basic CRUD API.
+// @Contact andre.venezuela@gmail.com
+// @TermsOfServiceUrl https://github.com/AVenezuela/widgets-spa
+// @BasePath http://localhost:666/api/
+// @LoginPath http://localhost:666/login
 package main
 
 import (
@@ -17,7 +24,7 @@ func main() {
 
 	authMiddleware := &jwt.GinJWTMiddleware{
 		Realm:      "test zone",
-		Key:        []byte("secret key"),
+		Key:        []byte("vene@RedVentures2workHard"),
 		Timeout:    time.Hour,
 		MaxRefresh: time.Hour,
 		Authenticator: func(userId string, password string, c *gin.Context) (string, bool) {
