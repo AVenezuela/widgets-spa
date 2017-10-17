@@ -23,6 +23,13 @@ go build
 //The URL is http://localhost:666
 ```
 
+# API Authorization
+To authorize api, the credentials are:
+```go
+Username: admin
+Password: admin
+```
+
 # Widgets Single Page App Demo
 This is a simple multi-page HTML site. The goal of this project is to take this hardcoded HTML site, and make it hit an API for showing/listing user and widget information. 
 
