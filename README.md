@@ -1,11 +1,11 @@
 # SQL CONNECTION CONFIGURATION
 
-Setting the connection string for a SQL Server DB
-Create a system variable:
+Setting the connection string for a SQL Server DB.
+Create a Environment Variable:
 
 ```go
-//Name CS_WIDGETDB
-//Value your sql connection string 
+Name    CS_WIDGETDB
+Value   "your sql connection string"
 ```
 
 # Usage
@@ -13,14 +13,14 @@ The main site is at ".\site\" folder. You can start it by runnig:
 ```go
 go build
 .\site.exe
-The URL is localhost\555
+//The URL is http://localhost:555
 ```
 
 The api is at ".\api\" folder. You can start it by runnig:
 ```go
 go build
 .\api.exe
-The URL is localhost\666
+//The URL is http://localhost:666
 ```
 
 # Widgets Single Page App Demo
