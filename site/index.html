@@ -283,12 +283,7 @@
                 </ul>
                 <form class="form-inline">
                     <input type="text" class="form-control form-control-sm" placeholder="Search for..." v-model="searchFor">
-                    <select class="form-control form-control-sm" number v-model.number="totalPerPage">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                    </select>
+                    
                 </form>
             </div>
         </nav>
@@ -311,6 +306,9 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div>
+            <pagination :list="list" :total-records="list.length" :per-page="totalPerPage" />
         </div>
     </div>
 </script>

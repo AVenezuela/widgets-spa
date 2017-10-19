@@ -41,15 +41,19 @@ Vue.component('pagination', {
     props: {
         list: {
             required: true
+        },
+        totalRecords: Number,
+        perPage: Number
+    },
+    beforeUpdate: function() {
+        if (this.list) this.calcPages
+    },
+    computed:{
+        calcPages: function() {
+            this.totalPages = Math.ceil((this.totalRecords / this.perPage), -1);
         }
     },
-    mounted: function() {
-        if (this.list) this.calcPages()
-    },
-    methods: {
-        calcPages: function() {
-            this.totalPages = Math.ceil((this.list.length / this.perPage), -1);
-        },
+    methods: {        
         showPagination: function() {
             return (this.totalPages > 1)
         },

@@ -23,7 +23,7 @@ Vue.component('widget', {
         columns: Array
     },
     mounted: function() {
-        //store.dispatch(SET_WIDGETS)
+        //store.dispatch(SET_WIDGETS) 
     },
     methods: {
         sortBy: function(key) {
