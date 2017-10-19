@@ -8,12 +8,12 @@
 package main
 
 import (
-	"net/http"	
+	"net/http"
 	"time"
 
 	"github.com/AVenezuela/widgets-spa/api/route"
-	"github.com/gin-contrib/cors"
 	"github.com/appleboy/gin-jwt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,7 +24,7 @@ func main() {
 
 	authMiddleware := &jwt.GinJWTMiddleware{
 		Realm:      "test zone",
-		Key:        []byte("vene@RedVentures2workHard"),
+		Key:        []byte("secret"),
 		Timeout:    time.Hour,
 		MaxRefresh: time.Hour,
 		Authenticator: func(userId string, password string, c *gin.Context) (string, bool) {
@@ -54,10 +54,9 @@ func main() {
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:555"}
-	config.AllowHeaders = []string{"Authorization","Origin", "X-Requested-With", "Content-Type", "Accept"}
+	config.AllowHeaders = []string{"Authorization", "Origin", "X-Requested-With", "Content-Type", "Accept"}
 	config.AllowMethods = []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"}
 	router.Use(cors.New(config))
-
 
 	router.POST("/login", authMiddleware.LoginHandler)
 

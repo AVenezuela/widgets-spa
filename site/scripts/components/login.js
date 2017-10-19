@@ -1,28 +1,29 @@
 const LoginView = Vue.component('login-view', {
     template: '#login-view',
-    data:function(){
-        return  {
-            showCreateModal:false,
-            user:{}
+    data: function() {
+        return {
+            showCreateModal: false,
+            user: {}
         }
     },
-    methods:{
-        checkLogged (){
+    methods: {
+        checkLogged() {
             this.showCreateModal = !store.getters.isLogged
         },
-        actionLogin (){
-            store.dispatch(DO_LOGIN, this.user).then(function(){
-                router.go('/users')
-            }).catch(function(){
-                router.go('/login')
+        actionLogin() {
+            var meRouter = router
+            store.dispatch(DO_LOGIN, this.user).then(function() {
+                meRouter.go('/')
+            }).catch(function(error) {
+                $('#btnActionModal').notify(error.response.data.message, { elementPosition: 'top center', className: "danger" });
             })
         },
-        closeModal (){
+        closeModal() {
             return false
         }
 
     },
-    mounted:function(){
+    mounted: function() {
         this.checkLogged()
         this.user = store.state.auth.user
     }

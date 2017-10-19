@@ -1,90 +1,45 @@
-const HTTP = axios.create({
-    baseURL: `http://localhost:666/api/`,
-    headers: {
-        "Content-Type": "application/json;charset=UTF-8"        
-    }
-})
-HTTP.interceptors.request.use(config => {
-    config.headers.Authorization = "Bearer " + localStorage.getItem(STR_TOKEN)
-    return config
-})
-HTTP.interceptors.response.use(response => {    
-    // …get the token from the header or response data if exists, and save it.
-    const token = response.headers['Authorization'] || response.data['token']
-    if (token) {
-      //ls.set('jwt-token', token)
-    }
-    return response
-  }, error => {    
-    // Also, if we receive a Bad Request / Unauthorized error
-    if (error.response.status === 400 || error.response.status === 401) {
-      // and we're not trying to login
-      if (!(error.config.method === 'post' && /\/api\/me\/?$/.test(error.config.url))) {
-          alert('Needs login')
-          localStorage.removeItem(STR_TOKEN)
-        // the token must have expired. Log out.
-        //event.emit('logout')
-      }
-    }
-    return Promise.reject(error)
-})
-
-const SET_USERS = 'SET_USERS'
-const SET_WIDGETS = 'SET_WIDGETS'
-const SAVE_WIDGET = 'SAVE_WIDGET'
-const SAVE_USER = 'SAVE_USER'
-const UPDATE_WIDGET = 'UPDATE_WIDGET'
-const UPDATE_USER = 'UPDATE_USER'
-const DEL_WIDGET = 'DEL_WIDGET'
-const DEL_USER = 'DEL_USER'
-const STR_TOKEN = 'STR_TOKEN'
-const DO_LOGIN = 'DO_LOGIN'
-const DO_LOGOUT = 'DO_LOGOUT'
-const SORT_USERBY = 'SORT_USERBY'
-const SORT_WIDGETBY = 'SORT_WIDGETBY'
-
-const LoginModule ={
-    state:{
-        user:{
-            username:'',
-            password:'',
-            token:''
+const LoginModule = {
+    state: {
+        user: {
+            username: '',
+            password: ''
         },
-        isLogged:Boolean
+        isLogged: Boolean
     },
-    mutations:{
-        logAuth (state, user){
-            localStorage.setItem(STR_TOKEN, user.token)            
+    mutations: {
+        [SET_AUTH](state, user) {
+            state.user = user
         },
-        [DO_LOGOUT] (state){
+        [DO_LOGOUT](state) {
             localStorage.removeItem(STR_TOKEN)
             state.user = {
-                username:'',
-                password:'',
-                token:''
+                username: '',
+                password: ''
             }
             state.isLogged = false
         }
     },
-    actions:{
-        [DO_LOGIN](context, user){
-            return new Promise((resolve, reject) => {                
+    actions: {
+        [DO_LOGIN](context, user) {
+            return new Promise((resolve, reject) => {
                 axios.post('http://localhost:666/login', user).then(function(response) {
-                    user.token = response.data.token
-                    context.commit('logAuth', user)
+                    context.commit(SET_AUTH, user)
+                    localStorage.setItem(STR_TOKEN, response.data.token)
                     resolve(response);
                 }).catch(function(e) {
-                    alert("Ops! Something is wrong on login for user " + user.username +"\n"+ e.response.data.message)
-                    reject(error);
-                })      
-            })                  
+                    reject(e);
+                })
+            })
         },
-        [DO_LOGOUT](context){
+        [DO_LOGOUT](context) {
             context.commit(DO_LOGOUT)
+        },
+        [CHECK_LOGGED]() {
+            return this.getters.isLogged
         }
     },
-    getters:{        
-        isLogged (state){
+    getters: {
+        isLogged(state) {
             state.isLogged = (localStorage.getItem(STR_TOKEN) != null)
             return state.isLogged
         }
@@ -95,23 +50,23 @@ const UserModule = {
     state: {
         list: [],
         model: {},
-        sortKey: 'name'
+        filteredList: []
     },
     mutations: {
-        setUsers(state, users) {
+        [SET_USERS](state, users) {
             state.list = users
         },
-        addUser(state, user) {
+        [SAVE_USER](state, user) {
             state.list.push(user)
         },
-        editUser(state, objUser) {
+        [UPDATE_USER](state, objUser) {
             state.list.splice(state.list.indexOf(objUser.oldUser), 1)
             state.list.push(objUser.newUser)
         },
-        delUser(state, user) {
+        [DEL_USER](state, user) {
             state.list.splice(state.list.indexOf(user), 1)
         },
-        [SORT_USERBY](state, sortKey){
+        [SORT_USERBY](state, sortKey) {
             state.sortKey = sortKey
         }
     },
@@ -119,16 +74,16 @@ const UserModule = {
         [SET_USERS](context) {
             if (!this.getters.isUsersLoaded) {
                 HTTP.get('users').then(function(response) {
-                    context.commit('setUsers', response.data)
+                    context.commit(SET_USERS, response.data)
                 }).catch(function(e) {
-                    alert("Ops! Something is wrong loading users\n" + JSON.stringify(e))
+                    $.notify("Ops! Something is wrong loading users.", { elementPosition: 'top center', className: "danger" });
                 })
             }
         },
         [SAVE_USER](context, objUser) {
             return new Promise((resolve, reject) => {
                 HTTP.post('user', objUser.newUser).then(function(response) {
-                    context.commit('addUser', response.data)
+                    context.commit(SAVE_USER, response.data)
                     resolve(response);
                 }).catch(function(error) {
                     reject(error);
@@ -138,7 +93,7 @@ const UserModule = {
         [DEL_USER](context, user) {
             return new Promise((resolve, reject) => {
                 HTTP.delete('user/' + user.id).then(function(response) {
-                    context.commit('delUser', user)
+                    context.commit(DEL_USER, user)
                     resolve(response);
                 }).catch(function(error) {
                     reject(error);
@@ -148,29 +103,19 @@ const UserModule = {
         [UPDATE_USER](context, objUser) {
             return new Promise((resolve, reject) => {
                 HTTP.put('user', objUser.newUser).then(function(response) {
-                    context.commit('editUser', objUser)
+                    context.commit(UPDATE_USER, objUser)
                     resolve(response);
                 }).catch(function(error) {
                     reject(error);
                 })
             })
         },
-        [SORT_USERBY](context, sortKey){
-            context.dispatch(SORT_USERBY, sortKey)
+        [SORT_USERBY](context, param) {
+            context.state.filteredList = context.state.list
+
         }
     },
     getters: {
-        getSortedUsers(state) {
-            var data = []
-            if (state.sortKey) {
-                data = state.list.slice().sort(function (a, b) {
-                  a = a[state.sortKey]
-                  b = b[state.sortKey]
-                  return (a === b ? 0 : a > b ? 1 : -1) * 1
-                })
-              }
-            return data
-        },
         isUsersLoaded(state) {
             return (state.list.length > 0)
         }
@@ -196,7 +141,7 @@ const WidgetModule = {
         delWidget(state, widget) {
             state.list.splice(state.list.indexOf(widget), 1)
         },
-        [SORT_WIDGETBY](state, sortKey){
+        [SORT_WIDGETBY](state, sortKey) {
             state.sortKey = sortKey
         }
     },
@@ -206,7 +151,7 @@ const WidgetModule = {
                 HTTP.get('widgets').then(function(response) {
                     context.commit('setWidgets', response.data)
                 }).catch(function(e) {
-                    alert('Ops! Something is wrong loading widgets\n'+ JSON.stringify(e))
+                    $.notify("Ops! Something is wrong loading widgets.", { elementPosition: 'top center', className: "danger" });
                 })
             }
         },
@@ -239,8 +184,8 @@ const WidgetModule = {
                     reject(error);
                 })
             })
-        },        
-        [SORT_WIDGETBY](context, sortKey){
+        },
+        [SORT_WIDGETBY](context, sortKey) {
             context.dispatch(SORT_WIDGETBY, sortKey)
         }
     },
@@ -248,12 +193,12 @@ const WidgetModule = {
         getSortedWidgets(state) {
             var data = []
             if (state.sortKey) {
-                data = state.list.slice().sort(function (a, b) {
-                  a = a[state.sortKey]
-                  b = b[state.sortKey]
-                  return (a === b ? 0 : a > b ? 1 : -1) * 1
+                data = state.list.slice().sort(function(a, b) {
+                    a = a[state.sortKey]
+                    b = b[state.sortKey]
+                    return (a === b ? 0 : a > b ? 1 : -1) * 1
                 })
-              }
+            }
             return data
         },
         isWidgetsLoaded(state) {

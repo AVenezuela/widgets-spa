@@ -1,26 +1,24 @@
 Vue.component('user-widget', {
     template: '#user-widget',
-    data:function(){
-        return  {
-            searchFor:''
+    data: function() {
+        return {
+            gridColumns: ['id', 'name']
         }
     },
-    computed: {        
+    computed: {
         users() {
-            var data = store.state.moduleUser.list
-            var searchKey = this.searchFor && this.searchFor.toLowerCase()
-            var searchKey = this.searchFor && this.searchFor.toLowerCase()
-            if(searchKey){
-                data = data.filter(function (row) {
-                        return Object.keys(row).some(function (key) {
-                            return String(row[key]).toLowerCase().indexOf(searchKey) > -1
-                        })
-                })
-            }
-            return data
+            return store.state.moduleUser.list
+        },
+        totalUsers() {
+            return this.users.length
         }
     },
-    mounted:function(){
+    methods: {
+        setPage(page) {
+            this.page = page
+        }
+    },
+    mounted: function() {
         store.dispatch(SET_USERS)
     }
 })
