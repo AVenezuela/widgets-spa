@@ -42,10 +42,11 @@ Vue.component('widget', {
             var filterKey = this.searchFor && this.searchFor.toLowerCase()
             var order = this.sortOrders[sortKey] || 1
             var data = this.list
+            var me = this
             if (filterKey) {
-                data = data.filter(function(row) {
+                data = data.filter(function(row) {                    
                     return Object.keys(row).some(function(key) {
-                        return String(row[key]).toLowerCase().indexOf(filterKey) > -1
+                        return ((String(row[key]).toLowerCase().indexOf(filterKey) > -1) && (me.columns.indexOf(key) > -1 ))
                     })
                 })
             }

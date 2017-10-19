@@ -45,7 +45,7 @@ Vue.component('pagination', {
         totalRecords: Number,
         perPage: Number
     },
-    beforeUpdate: function() {
+    mounted: function() {
         if (this.list) this.calcPages
     },
     computed:{
