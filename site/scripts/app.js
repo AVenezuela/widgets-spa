@@ -27,7 +27,11 @@ Vue.config.productionTip = false
 
 Vue.component('modal', {
     template: '#modal-template',
-    props: ['model', 'cancelText', 'actionText', 'modalSize']
+    mounted: function(){
+        this.disableActionButton = false
+        this.disableActionButton = false
+    },
+    props: ['model', 'cancelText', 'actionText', 'modalSize', 'showActionButton', 'showCancelButton', 'disableActionButton', 'disableCancelButton']
 })
 
 Vue.component('pagination', {
@@ -73,6 +77,8 @@ Vue.component('pagination', {
         }
     }
 })
+
+Vue.use(VeeValidate)
 
 new Vue({
     router,

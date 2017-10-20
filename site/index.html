@@ -18,6 +18,7 @@
     <script src="components/vue/vue.js"></script>
     <script src="components/vue/vue-router.js"></script>
     <script src="https://unpkg.com/vuex@3.0.0/dist/vuex.js"></script>
+    <script src="https://unpkg.com/vee-validate@2.0.0-rc.7"></script>    
 </head>
 <!--go get github.com/denisenkom/go-mssqldb-->
 
@@ -42,7 +43,7 @@
     </div>
 </body>
 <script type="text/x-template" id="login-view">
-    <modal v-if="showCreateModal" :model="user" action-text="Login" cancel-text="Cancel" modal-size="modal-sm" @save="actionLogin" @close="closeModal">
+    <modal v-if="showCreateModal" :model="user" action-text="Login" cancel-text="Cancel" modal-size="modal-sm" @save="actionLogin" @close="closeModal" :show-action-button="true" :show-cancel-button="false">
         <div slot="body" class="row">
             <div class="col-lg-12">
                 <div class="form-group">
@@ -67,7 +68,7 @@
     </li>
 </script>
 <script type="text/x-template" id="home-view">
-    <div>
+    <div>        
         <div class="row form-group">
             <div class="col-lg-3 col-md-6 col-xs-12">
                 <div class="card card-inverse card-primary p-3 text-center">
@@ -152,23 +153,24 @@
                     </table>
                 </div>
             </div>
-
         </div>
-        <modal v-if="showCreateModal" :model="user" action-text="Save" cancel-text="Cancel" modal-size="modal-lg" @save="actionUser" @close="closeModal">
+        <modal v-if="showCreateModal" :model="user" action-text="Save" cancel-text="Cancel" modal-size="modal-lg" @save="actionUser" :show-action-button="true" :disable-action-button="(errors.length > 0)" :show-cancel-button="true" @close="closeModal">
             <div slot="body" class="row">
-                <div class="col-lg-12">
-                    <div class="form-group">
-                        <input type="text" class="form-control form-control-sm" v-model="user.name" placeholder="Name">
+                
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <input v-validate="'required|alpha_spaces'" name="name" type="text" :class="{ 'form-control form-control-sm': true, 'form-control-danger': errors.has('name') }" v-model="user.name" placeholder="Name">                        
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="form-group">
-                        <input type="text" class="form-control form-control-sm" v-model="user.gravatar" placeholder="URL Avatar">
+                    <div class="col-lg-9">
+                        <div class="form-group">
+                            <input v-validate="'required|url'" :class="{ 'form-control-danger': errors.has('gravatar') }" name="gravatar" type="text" class="form-control form-control-sm" v-model="user.gravatar" placeholder="URL Avatar">
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-6 gravatar-md">
-                    <img :src="user.gravatar" class="gravatar-md" />
-                </div>
+                    <div class="col-lg-3 gravatar-md">
+                        <img :src="user.gravatar" class="gravatar-md" />
+                    </div>
+                
             </div>
             <h4 slot="header" class="text-success">Create User</h4>
         </modal>
@@ -230,21 +232,21 @@
                 </div>
             </div>
         </div>
-        <modal v-if="showCreateModal" :model="widget" modal-size="modal-lg" action-text="Save" cancel-text="Cancel" @save="actionWidget" @close="closeModal">
+        <modal v-if="showCreateModal" :model="widget" modal-size="modal-lg" action-text="Save" cancel-text="Cancel" @save="actionWidget" :show-action-button="false" :show-cancel-button="false" @close="closeModal">
             <div slot="body" class="row">
                 <div class="col-lg-12">
                     <div class="form-group">
-                        <input type="text" class="form-control form-control-sm" v-model="widget.name" placeholder="Name">
+                        <input v-validate="'required|alpha_spaces'" name="name" :class="{ 'form-control-danger': errors.has('name') }" type="text" class="form-control form-control-sm" v-model="widget.name" placeholder="Name">
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="form-group">
-                        <input type="text" class="form-control form-control-sm" v-model="widget.price" placeholder="Price">
+                        <input v-validate="'required|decimal'" name="price" :class="{ 'form-control-danger': errors.has('price') }" type="text" class="form-control form-control-sm" v-model="widget.price" placeholder="Price">
                     </div>
                 </div>
                 <div class="col-lg-4">
                     <div class="form-group">
-                        <input type="number" number class="form-control form-control-sm" v-model.number="widget.inventory" placeholder="Inventory">
+                        <input v-validate="'required|numeric'" name="inventory" :class="{ 'form-control-danger': errors.has('inventory') }" type="number" number class="form-control form-control-sm" v-model.number="widget.inventory" placeholder="Inventory">
                     </div>
                 </div>
                 <div class="col-lg-2">
@@ -330,8 +332,8 @@
                     </div>
                     <div class="modal-footer">
                         <slot name="footer">
-                            <button id="btnCancelModal" class="btn btn-white btn-sm" @click="$emit('close')"> {{ cancelText }}</button>
-                            <button id="btnActionModal" class="btn btn-primary btn-sm" @click="$emit('save')"> {{ actionText }}</button>
+                            <button id="btnCancelModal" class="btn btn-white btn-sm" :disabled="disableCancelButton" @click="$emit('close')" v-show="showCancelButton"> {{ cancelText }}</button>
+                            <button id="btnActionModal" class="btn btn-primary btn-sm" :disabled="disableActionButton" @click="$emit('save')" v-show="showActionButton"> {{ actionText }}</button>
                         </slot>
                     </div>
                 </div>
