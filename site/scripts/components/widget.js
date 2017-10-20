@@ -9,7 +9,8 @@ Vue.component('widget', {
             sortKey: '',
             sortOrders: sortOrders,
             searchFor: '',
-            totalPerPage: 1
+            totalPerPage: 5,
+            currentPage: 1
         }
     },
     props: {
@@ -26,9 +27,12 @@ Vue.component('widget', {
         //store.dispatch(SET_WIDGETS) 
     },
     methods: {
-        sortBy: function(key) {
+        sortBy (key) {
             this.sortKey = key
             this.sortOrders[key] = this.sortOrders[key] * -1
+        },
+        doPageAction(page){
+            this.currentPage = page
         }
     },
     filters: {
@@ -37,7 +41,7 @@ Vue.component('widget', {
         }
     },
     computed: {
-        filteredData: function() {
+        filteredData() {
             var sortKey = this.sortKey
             var filterKey = this.searchFor && this.searchFor.toLowerCase()
             var order = this.sortOrders[sortKey] || 1
@@ -58,6 +62,13 @@ Vue.component('widget', {
                 })
             }
             return data
+        },
+        paginateData(){
+            var data = this.filteredData
+            var from = ((this.currentPage - 1) * this.totalPerPage)
+            var to = (this.currentPage * this.totalPerPage)
+
+            return data.slice(from, to)
         }
     }
 })

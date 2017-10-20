@@ -269,10 +269,6 @@
     padding: 10px;
 }
 
-.widget .widget-title .pagination,
-.widget .widget-footer .pagination {
-    margin: 0;
-}
 
 .widget .widget-content .title {
     font-size: 28px;
@@ -368,4 +364,12 @@ td .input-group-addon .color-square {
 .dashboard-text {
     color: #fff;
     font-size: 20px
+}
+.column-header{
+    cursor: pointer
+}
+.pagination {
+    text-align: center;
+    width: 100%;
+    justify-content: center;
 }

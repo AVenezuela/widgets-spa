@@ -32,33 +32,29 @@ Vue.component('modal', {
 
 Vue.component('pagination', {
     template: '#pagination-template',
-    data: function() {
+    data: function(){
         return {
-            totalPages: 1,
             currentPage: 1
         }
-    },
+    },    
     props: {
-        list: {
+        data: {
             required: true
-        },
-        totalRecords: Number,
-        perPage: Number
-    },
-    mounted: function() {
-        if (this.list) this.calcPages
+        },        
+        perPage: Number        
     },
     computed:{
-        calcPages: function() {
-            this.totalPages = Math.ceil((this.totalRecords / this.perPage), -1);
-        }
-    },
-    methods: {        
+        totalPages: function() {            
+            return Math.ceil((this.data.length / this.perPage), -1);
+        },
         showPagination: function() {
             return (this.totalPages > 1)
-        },
+        }
+    },
+    methods: {                
         setPage: function(_page) {
-
+            this.currentPage = _page
+            this.$emit('page-change', _page)
         },
         nextPage: function() {
             this.setPage(this.currentPage + 1);

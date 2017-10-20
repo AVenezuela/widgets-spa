@@ -283,11 +283,11 @@
                 </ul>
                 <form class="form-inline">
                     <input type="text" class="form-control form-control-sm" placeholder="Search for..." v-model="searchFor">
-                    <select class="form-control form-control-sm" number v-model.number="totalPerPage">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
+                    <select class="form-control form-control-sm" number v-model.number="totalPerPage" v-on:change="doPageAction(1)">
+                        <option>5</option>
+                        <option>10</option>
+                        <option>15</option>
+                        <option>20</option>
                     </select>
                 </form>
             </div>
@@ -296,7 +296,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th v-for="key in columns" @click="sortBy(key)" class="text-center" :class="{ active: sortKey == key }">
+                        <th v-for="key in columns" @click="sortBy(key)" class="text-center column-header" :class="{ active: sortKey == key }">
                             {{ key | capitalize }}
                             <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
                                 </span>
@@ -304,7 +304,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="entry in filteredData">
+                    <tr v-for="entry in paginateData">
                         <td class="text-center" v-for="key in columns">
                             {{entry[key]}}
                         </td>
@@ -312,8 +312,8 @@
                 </tbody>
             </table>
         </div>
-        <div>
-            
+        <div class="widget-footer">
+            <pagination :data="filteredData" :current-page="currentPage" :per-page="totalPerPage" @page-change="doPageAction"/>
         </div>
     </div>
 </script>
@@ -340,7 +340,7 @@
     </transition>
 </script>
 <script type="text/x-template" id="pagination-template">
-    <ul class="pagination pagination-primary" v-show="showPagination()">
+    <ul class="pagination pagination-primary text-xs-center" v-show="showPagination">
         <li class="page-item" v-show="showPrevious()"><a class="page-link disabled" @click="previousPage"><em class="fa fa-angle-double-left"></em></a></li>
         <li class="page-item" v-for="page in totalPages" v-bind:class="{'active': currentPage == page}" v-on:click="setPage(page)">
             <a class="page-link">{{ page }}</a>
