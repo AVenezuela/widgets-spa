@@ -223,8 +223,8 @@
                                 <td class="text-center"><i :class="{ 'fa fa-check text-success': widget.melts == true }" aria-hidden="true"></i></td>
                                 <td class="text-center">{{ widget.inventory }}</td>
                                 <td class="column-action text-right">
-                                    <i class="fa fa-edit" @click="editWidget(widget)" data-container="body" data-toggle="tooltip" data-placement="left" data-html="true" data-title="Edit user" data-original-title="" title=""></i> &nbsp;&nbsp;
-                                    <i class="fa fa-trash-o" @click="delWidget(widget)" data-container="body" data-toggle="tooltip" data-placement="left" data-html="true" data-title="Delete user" data-original-title="" title=""></i>
+                                    <i class="fa fa-edit" @click="editWidget(widget)" data-container="body" data-toggle="tooltip" data-placement="left" data-html="true" data-title="Edit widget" data-original-title="" title=""></i> &nbsp;&nbsp;
+                                    <i class="fa fa-trash-o" @click="delWidget(widget)" data-container="body" data-toggle="tooltip" data-placement="left" data-html="true" data-title="Delete widget" data-original-title="" title=""></i>
                                 </td>
                             </tr>
                         </tbody>
@@ -232,7 +232,7 @@
                 </div>
             </div>
         </div>
-        <modal v-if="showCreateModal" :model="widget" modal-size="modal-lg" action-text="Save" cancel-text="Cancel" @save="actionWidget" :show-action-button="false" :show-cancel-button="false" @close="closeModal">
+        <modal v-if="showCreateModal" :model="widget" modal-size="modal-lg" action-text="Save" cancel-text="Cancel" @save="actionWidget" :show-action-button="true" :show-cancel-button="true" @close="closeModal">
             <div slot="body" class="row">
                 <div class="col-lg-12">
                     <div class="form-group">
